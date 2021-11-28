@@ -37,10 +37,11 @@ ALLOWED_HOSTS = [
 
 
 # Application definition
-ENVIRONEMNT = os.getenv('ENVIRONMENT')
+ENVIRONMENT = os.getenv('ENVIRONMENT')
 
 DEVELOPMENT_APPS = [
     'django_extensions',
+    'debug_toolbar',
 ]
 
 INSTALLED_APPS = [
@@ -55,9 +56,6 @@ INSTALLED_APPS = [
     'apps.post'
 ]
 
-if ENVIRONEMNT == 'dev':
-    INSTALLED_APPS += DEVELOPMENT_APPS
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -67,6 +65,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+DEV_MIDDLEWARES = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
+
+if ENVIRONMENT == 'dev':
+    INSTALLED_APPS += DEVELOPMENT_APPS
+    MIDDLEWARE += DEV_MIDDLEWARES
 
 ROOT_URLCONF = 'tantra.urls'
 
@@ -148,3 +154,30 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'authentication.User'
+
+INTENAL_IPS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+    },
+}
