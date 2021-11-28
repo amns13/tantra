@@ -29,10 +29,19 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS: list[str] = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+]
 
 
 # Application definition
+ENVIRONEMNT = os.getenv('ENVIRONMENT')
+
+DEVELOPMENT_APPS = [
+    'django_extensions',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -45,6 +54,9 @@ INSTALLED_APPS = [
     'apps.authentication',
     'apps.post'
 ]
+
+if ENVIRONEMNT == 'dev':
+    INSTALLED_APPS += DEVELOPMENT_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
