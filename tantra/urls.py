@@ -29,7 +29,9 @@ urlpatterns = [
         'api/token/refresh/',
         TokenRefreshView.as_view(),
         name='token_refresh'),
-    path('api/', include('apps.authentication.urls')),
+    path('api/auth/', include('apps.authentication.urls')),
+    path('api/posts/', include('apps.post.urls')),
+
 ]
 
 if is_dev_environment():
