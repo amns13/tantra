@@ -15,8 +15,8 @@ class BaseModel(models.Model):
         "Creation Time",
         auto_now_add=True,
         help_text="Creation time of the object. Automatically set at the time of creation.")
-    last_modified_at = models.DateTimeField(
-        "Last Modification Time",
+    updated_at = models.DateTimeField(
+        "Last Update Time",
         auto_now=True,
         help_text="Updated everytime any model field is updated.")
     is_active = models.BooleanField(
