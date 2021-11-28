@@ -6,8 +6,6 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.urls import reverse
 
-from ..core.models import BaseModel
-
 
 class UserManager(BaseUserManager):
     """Manager class for custom User model."""
