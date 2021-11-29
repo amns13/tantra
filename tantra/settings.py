@@ -184,8 +184,14 @@ LOGGING = {
     },
 }
 
+SIMPLE_JWT = {
+    'USER_ID_FIELD': 'uuid'
+}
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+
+DEFAULT_FK_REFERENCE_FIELD = 'uuid'
