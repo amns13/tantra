@@ -16,7 +16,6 @@ class PostAdmin(CustomModelAdmin):
         'created_by',
         'updated_by',
         'title',
-        'body',
         'author',
     )
     list_filter = (
