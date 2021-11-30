@@ -8,19 +8,19 @@ from .models import User
 @admin.register(User)
 class UserAdmin(CustomModelAdmin):
     list_display = (
-        'password',
-        'last_login',
-        'is_superuser',
         'pkid',
         'uuid',
-        'created_at',
-        'updated_at',
-        'is_active',
-        'created_by',
-        'updated_by',
         'username',
         'email',
         'is_staff',
+        'is_active',
+        'is_verified',
+        'is_superuser',
+        'last_login',
+        'created_at',
+        'updated_at',
+        'created_by',
+        'updated_by',
     )
     list_filter = (
         'last_login',

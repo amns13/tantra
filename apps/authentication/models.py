@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import uuid
+from typing import Optional
 
 from core.models import BaseModel
+from core.utils import decode_token, get_token
+from django.conf import settings
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -84,6 +87,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
         _('staff status'),
         default=False,
         help_text=_('Designates whether the user can log into this admin site.'))
+    is_verified = models.BooleanField(_('verification status'), default=False)
 
     objects = UserManager()
 
@@ -93,3 +97,31 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
 
     def __str__(self) -> str:
         return self.username
+
+    def get_email_verification_token(self) -> str:
+        """Generates a token for email verification"""
+        uuid = str(self.uuid)
+        return get_token(
+            settings.ACCOUNT_VERIFICATION_TOKEN_EXPIRY, verify_email=uuid)
+
+    def get_password_reset_token(self) -> str:
+        """Generates a token for password reset"""
+        uuid = str(self.uuid)
+        return get_token(settings.PASSWORD_RESET_TOKEN_EXPIRY,
+                         reset_password=uuid)
+
+    @staticmethod
+    def verify_email_verification_token(token: str) -> Optional[User]:
+        try:
+            uuid = decode_token(token)['verify_email']
+        except BaseException:
+            return None
+        return User.objects.filter(uuid=uuid).first()
+
+    @staticmethod
+    def verify_password_reset_token(token: str) -> Optional[User]:
+        try:
+            uuid = decode_token(token)['reset_password']
+        except BaseException:
+            return None
+        return User.objects.filter(uuid=uuid).first()
