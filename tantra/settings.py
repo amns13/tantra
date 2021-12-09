@@ -181,3 +181,5 @@ LOGGING = {
         },
     },
 }
+
+DEFAULT_FK_REFERENCE_FIELD = 'uuid'
