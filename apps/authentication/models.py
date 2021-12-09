@@ -12,6 +12,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.core.mail import EmailMessage
 
 
 class UserManager(BaseUserManager):
@@ -97,6 +98,16 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
 
     def __str__(self) -> str:
         return self.username
+
+    def send_email_verification_email(self) -> None:
+        token = self.get_email_verification_token()
+        email = EmailMessage(
+            _('[Tantra] Verify Your Email'),
+            token,
+            settings.FROM_EMAIL,
+            [self.email],
+        )
+        email.send()
 
     def get_email_verification_token(self) -> str:
         """Generates a token for email verification"""
