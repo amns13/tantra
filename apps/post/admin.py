@@ -1,66 +1,89 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 
+from core.admin import CustomModelAdmin
 from .models import Post, PostComment, PostLike, PostCommentLike
 
 
 @admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(CustomModelAdmin):
     list_display = (
-        'id',
+        'pkid',
+        'uuid',
+        'title',
+        'author',
+        'status',
         'created_at',
         'updated_at',
         'is_active',
-        'title',
-        'body',
+        'created_by',
+        'updated_by',
+    )
+    list_filter = (
+        'is_active',
+        'status',
         'author',
     )
-    list_filter = ('created_at', 'updated_at', 'is_active', 'author')
     date_hierarchy = 'created_at'
 
 
 @admin.register(PostComment)
-class PostCommentAdmin(admin.ModelAdmin):
+class PostCommentAdmin(CustomModelAdmin):
     list_display = (
-        'id',
+        'pkid',
+        'uuid',
+        'author',
+        'post',
+        'body',
         'created_at',
         'updated_at',
         'is_active',
+        'created_by',
+        'updated_by',
+    )
+    list_filter = (
+        'is_active',
         'author',
-        'body',
         'post',
     )
-    list_filter = ('created_at', 'updated_at', 'is_active', 'author', 'post')
     date_hierarchy = 'created_at'
 
 
 @admin.register(PostLike)
-class PostLikeAdmin(admin.ModelAdmin):
+class PostLikeAdmin(CustomModelAdmin):
     list_display = (
+        'pkid',
+        'uuid',
+        'user',
+        'post',
         'created_at',
         'updated_at',
         'is_active',
-        'id',
+        'created_by',
+        'updated_by',
+    )
+    list_filter = (
+        'is_active',
         'user',
         'post',
     )
-    list_filter = ('created_at', 'updated_at', 'is_active', 'user', 'post')
     date_hierarchy = 'created_at'
 
 
 @admin.register(PostCommentLike)
-class PostCommentLikeAdmin(admin.ModelAdmin):
+class PostCommentLikeAdmin(CustomModelAdmin):
     list_display = (
+        'pkid',
+        'uuid',
         'created_at',
         'updated_at',
-        'is_active',
-        'id',
         'user',
         'comment',
+        'is_active',
+        'created_by',
+        'updated_by',
     )
     list_filter = (
-        'created_at',
-        'updated_at',
         'is_active',
         'user',
         'comment',

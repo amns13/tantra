@@ -1,22 +1,35 @@
+from core.models import BaseModel
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
-
-from core.models import BaseModel
+from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
 
 class Post(BaseModel):
+    class PostStatusChoices(models.TextChoices):
+        DRAFT = 'DRAFT', _('Draft')
+        PUBLISHED = 'PUBLISHED', _('Published')
+        UNPUBLISHED = 'UNPUBLISHED', _('Unpublished')
+
     title = models.CharField(
-        "Title",
+        _("title"),
         max_length=255,
-        help_text="Title of the post.")
-    body = models.TextField("body", help_text="Content of the post.")
+        help_text=_("Title of the post."))
+    body = models.TextField(_("body"), help_text=_("Content of the post."))
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='author',
-        related_name='created_posts')
+        verbose_name=_('author'),
+        related_name='created_posts',
+        to_field=settings.DEFAULT_FK_REFERENCE_FIELD)
+    status = models.CharField(
+        _("status"),
+        max_length=31,
+        choices=PostStatusChoices.choices,
+        help_text=_("Current status of the post."),
+        default=PostStatusChoices.DRAFT)
 
     def __str__(self) -> str:
         return self.title
@@ -27,8 +40,10 @@ class Comment(BaseModel):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='%(class)ss')
-    body = models.TextField('body', help_text="Contents of the comment.")
+        verbose_name=_("author"),
+        related_name='%(class)ss',
+        to_field=settings.DEFAULT_FK_REFERENCE_FIELD)
+    body = models.TextField('body', help_text=_("Contents of the comment."))
 
     class Meta:
         abstract = True
@@ -39,7 +54,8 @@ class PostComment(Comment):
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
-        related_name='comments')
+        related_name='comments',
+        to_field=settings.DEFAULT_FK_REFERENCE_FIELD)
 
     class Meta:
         db_table = 'post_comment'
@@ -50,11 +66,11 @@ class PostComment(Comment):
 
 class Like(BaseModel):
     """Base model for likes"""
-    id = models.BigAutoField('Unique ID', primary_key=True, editable=False)
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="%(class)ss")
+        related_name="%(class)ss",
+        to_field=settings.DEFAULT_FK_REFERENCE_FIELD)
 
     class Meta:
         abstract = True
@@ -65,7 +81,8 @@ class PostLike(Like):
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
-        related_name="likes")
+        related_name="likes",
+        to_field=settings.DEFAULT_FK_REFERENCE_FIELD)
 
     class Meta:
         db_table = 'post_like'
@@ -74,7 +91,10 @@ class PostLike(Like):
 class PostCommentLike(Like):
     """Likes on the comment"""
     comment = models.ForeignKey(
-        PostComment, on_delete=models.CASCADE, related_name="likes")
+        PostComment,
+        on_delete=models.CASCADE,
+        related_name="likes",
+        to_field=settings.DEFAULT_FK_REFERENCE_FIELD)
 
     class Meta:
         db_table = 'postcomment_like'
