@@ -56,6 +56,7 @@ class UserManager(BaseUserManager):
         """
         extra_fields["is_staff"] = True
         extra_fields["is_superuser"] = True
+        extra_fields["is_verified"] = True
         return self.create_user(username, email, password, **extra_fields)
 
 
