@@ -52,6 +52,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_htmx',
+    'crispy_forms',
+
     'apps.authentication',
     'apps.post'
 ]
@@ -64,6 +67,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'django_htmx.middleware.HtmxMiddleware'
 ]
 
 DEV_MIDDLEWARES = [
@@ -79,7 +84,7 @@ ROOT_URLCONF = 'tantra.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -183,3 +188,4 @@ LOGGING = {
 }
 
 DEFAULT_FK_REFERENCE_FIELD = 'uuid'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
