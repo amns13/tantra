@@ -1,10 +1,16 @@
 from core.models import BaseModel
+from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
+
+
+class PostQuerySet(models.QuerySet):
+    def published(self):
+        return self.filter(
+            is_active=True, status=Post.PostStatusChoices.PUBLISHED).select_related('author')
 
 
 class Post(BaseModel):
@@ -30,6 +36,8 @@ class Post(BaseModel):
         choices=PostStatusChoices.choices,
         help_text=_("Current status of the post."),
         default=PostStatusChoices.DRAFT)
+
+    objects = PostQuerySet.as_manager()
 
     def __str__(self) -> str:
         return self.title
