@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -191,3 +192,15 @@ DEFAULT_FK_REFERENCE_FIELD = 'uuid'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_URL = 'login'
+
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+FROM_EMAIL = os.getenv('FROM_EMAIL')
+
+ENCRYPTION_ALGORITHM = 'HS256'
+
+ACCOUNT_VERIFICATION_TOKEN_EXPIRY = timedelta(hours=24)
+PASSWORD_RESET_TOKEN_EXPIRY = timedelta(minutes=10)
