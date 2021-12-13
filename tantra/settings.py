@@ -41,7 +41,7 @@ ENVIRONMENT = os.getenv('ENVIRONMENT')
 
 DEVELOPMENT_APPS = [
     'django_extensions',
-    'debug_toolbar',
+    'debug_toolbar.apps.DebugToolbarConfig',
 ]
 
 INSTALLED_APPS = [
@@ -189,3 +189,5 @@ LOGGING = {
 
 DEFAULT_FK_REFERENCE_FIELD = 'uuid'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LOGIN_URL = 'login'

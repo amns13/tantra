@@ -21,6 +21,7 @@ from core.utils import is_dev_environment
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('apps.authentication.urls')),
+    path('post/', include('apps.post.urls')),
 ]
 
 if is_dev_environment():
