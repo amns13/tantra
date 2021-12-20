@@ -1,11 +1,18 @@
 from __future__ import annotations
 
-from core.models import BaseModel
+from typing import Optional
+
+from django.conf import settings
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.mail import EmailMultiAlternatives
 from django.db import models
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
+
+from core.models import BaseModel
+from core.utils import decode_token, get_token
 
 
 class UserManager(BaseUserManager):
@@ -96,6 +103,22 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     def __str__(self) -> str:
         return self.username
 
+    def send_email_verification_email(self) -> None:
+        context = {
+            'username': self.username,
+            'token': self.get_email_verification_token(),
+            'domain': settings.DOMAIN_URL,
+        }
+        html_email_body = render_to_string(
+            'emails/email_verification.html', context=context)
+        text_email_body = render_to_string(
+            'emails/email_verification.txt', context=context)
+        email = EmailMultiAlternatives(
+            _("[Tantra] Verify Your Email"), text_email_body, settings.FROM_EMAIL, [
+                self.email])
+        email.attach_alternative(html_email_body, "text/html")
+        email.send()
+
     def get_email_verification_token(self) -> str:
         """Generates a token for email verification"""
         uuid = str(self.uuid)
@@ -114,7 +137,14 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
             uuid = decode_token(token)['verify_email']
         except BaseException:
             return None
-        return User.objects.filter(uuid=uuid).first()
+
+        user = User.objects.filter(uuid=uuid).first()
+        if not user:
+            return None
+
+        user.is_verified = True
+        user.save()
+        return user
 
     @staticmethod
     def verify_password_reset_token(token: str) -> Optional[User]:

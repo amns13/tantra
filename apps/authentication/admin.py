@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from core.admin import CustomModelAdmin
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
+from core.admin import CustomModelAdmin
 from .models import User
 
 
@@ -26,8 +26,6 @@ class CustomUserAdmin(CustomModelAdmin, UserAdmin):
     list_filter = (
         'is_superuser',
         'is_active',
-        'created_by',
-        'updated_by',
         'is_staff',
         'is_verified',
     )

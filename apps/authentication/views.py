@@ -2,10 +2,9 @@ from django.contrib import messages
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from .forms import LoginForm, RegistrationForm
@@ -22,11 +21,14 @@ def register(request: HttpRequest) -> HttpResponse:
         form = RegistrationForm(request.POST)
         if form.is_valid():
             data = form.data
-            User.objects.create_user(
+            user = User.objects.create_user(
                 username=data['username'],
                 email=data['email'],
                 password=data['password'])
-            messages.success(request, _("Account created sucessfully."))
+            messages.success(
+                request,
+                _("Account created sucessfully. You will receive an email with a link to verify your account. Please follow the link."))
+            user.send_email_verification_email()
             return redirect('home')
     else:
         form = RegistrationForm()
@@ -52,4 +54,14 @@ def login(request: HttpRequest) -> HttpResponse:
 @login_required
 def logout(request: HttpRequest) -> HttpResponse:
     auth_logout(request)
+    return redirect('home')
+
+
+def verify_email(request: HttpRequest, token: str) -> HttpResponse:
+    user = User.verify_email_verification_token(token)
+    if not user:
+        messages.error(request, _("Invalid token."))
+    else:
+        messages.success(request, _("Account verified successfully!!!"))
+
     return redirect('home')
