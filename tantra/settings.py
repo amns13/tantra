@@ -25,7 +25,7 @@ load_dotenv()
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY', 'a-random-string')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '0.0.0.0',
+    '192.168.184.69',
 ]
 
 
@@ -204,3 +205,4 @@ ENCRYPTION_ALGORITHM = 'HS256'
 
 ACCOUNT_VERIFICATION_TOKEN_EXPIRY = timedelta(hours=24)
 PASSWORD_RESET_TOKEN_EXPIRY = timedelta(minutes=10)
+DOMAIN_URL = os.getenv('DOMAIN_URL')
