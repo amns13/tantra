@@ -1,6 +1,7 @@
-import jwt
+from datetime import datetime, timedelta
 from typing import Any, Optional
-from datetime import timedelta, datetime
+
+import jwt
 from django.conf import settings
 
 
