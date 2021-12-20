@@ -1,0 +1,12 @@
+<p>Dear {{ username }},</p>
+<p>
+    To verify your email address
+    <a href="{{ domain }}{% url 'verify-email' token=token %}">
+        click here
+    </a>.
+</p>
+<p>Alternatively, you can paste the following link in your browser's address bar:</p>
+<p>{{ domain }}{% url 'verify-email' token=token %}</p>
+<p>If you have not created an account on Nohara simply ignore this message.</p>
+<p>Sincerely,</p>
+<p>The Tantra Team</p>
