@@ -1,3 +1,4 @@
+import logging
 from django.contrib import messages
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -9,6 +10,8 @@ from django.utils.translation import gettext_lazy as _
 
 from .forms import LoginForm, RegistrationForm
 from .models import User
+
+logger = logging.getLogger(__name__)
 
 
 def register(request: HttpRequest) -> HttpResponse:
@@ -27,7 +30,7 @@ def register(request: HttpRequest) -> HttpResponse:
                 password=data['password'])
             messages.success(
                 request,
-                _("Account created sucessfully. You will receive an email with a link to verify your account. Please follow the link."))
+                _("Account created sucessfully. Please check your email to verify your account."))
             user.send_email_verification_email()
             return redirect('home')
     else:
@@ -58,10 +61,22 @@ def logout(request: HttpRequest) -> HttpResponse:
 
 
 def verify_email(request: HttpRequest, token: str) -> HttpResponse:
-    user = User.verify_email_verification_token(token)
-    if not user:
-        messages.error(request, _("Invalid token."))
+    if request.user.is_authenticated and request.user.is_verified:
+        messages.warning(request, _("User already verified."))
     else:
-        messages.success(request, _("Account verified successfully!!!"))
+        user = User.verify_email_verification_token(token)
+        if not user:
+            messages.error(request, _("Invalid token."))
+        elif request.user.is_authenticated and user != request.user:
+            messages.warning(
+                request, _("Already logged in with different user."))
+        else:
+            try:
+                user.verify_account()
+                messages.success(
+                    request, _("Account verified successfully!!!"))
+            except Exception as e:
+                logger.exception(e)
+                messages.error(request, _("An internal error occured."))
 
     return redirect('home')

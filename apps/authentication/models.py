@@ -138,13 +138,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
         except BaseException:
             return None
 
-        user = User.objects.filter(uuid=uuid).first()
-        if not user:
-            return None
-
-        user.is_verified = True
-        user.save()
-        return user
+        return User.objects.filter(uuid=uuid).first()
 
     @staticmethod
     def verify_password_reset_token(token: str) -> Optional[User]:
@@ -153,3 +147,8 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
         except BaseException:
             return None
         return User.objects.filter(uuid=uuid).first()
+
+    def verify_account(self) -> None:
+        """Verifies the user's account"""
+        self.is_verified = True
+        self.save()
