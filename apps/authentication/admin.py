@@ -33,9 +33,7 @@ class CustomUserAdmin(CustomModelAdmin, UserAdmin):
     date_hierarchy = 'created_at'
 
     fieldsets = (
-        (None, {'fields': ('username', 'password')}),
-        (_('Personal info'), {
-            'fields': ('email',)}),
+        (None, {'fields': ('username', 'email', 'password',)}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_verified', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
         }),
@@ -44,7 +42,7 @@ class CustomUserAdmin(CustomModelAdmin, UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2'),
+            'fields': ('username', 'email', 'password1', 'password2'),
         }),
     )
     search_fields = ('username', 'email')
