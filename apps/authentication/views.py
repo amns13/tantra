@@ -1,4 +1,5 @@
 import logging
+
 from django.contrib import messages
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -31,7 +32,6 @@ def register(request: HttpRequest) -> HttpResponse:
             messages.success(
                 request,
                 _("Account created sucessfully. Please check your email to verify your account."))
-            user.send_email_verification_email()
             return redirect('home')
     else:
         form = RegistrationForm()
