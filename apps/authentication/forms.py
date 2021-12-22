@@ -9,6 +9,7 @@ from . import models
 
 
 class RegistrationForm(forms.ModelForm):
+    """Form layout for registering new users."""
     password = forms.CharField(
         widget=forms.PasswordInput,
         help_text=_('Choose a strong password.'))
@@ -25,6 +26,7 @@ class RegistrationForm(forms.ModelForm):
         )
 
     def clean(self) -> Dict[str, Any]:
+        """This method validates the data in the form"""
         cleaned_data = super().clean()
         if cleaned_data.get('password') != cleaned_data.get('password2'):
             raise forms.ValidationError(_("Passwords don't match."))
@@ -33,7 +35,13 @@ class RegistrationForm(forms.ModelForm):
 
 
 class LoginForm(forms.Form):
+    """Form layout for login."""
+
     def __init__(self, *args, **kwargs):
+        """
+        Overriding __init__ method as request object is needed
+        for validating the details entered by user.
+        """
         self.request = kwargs.pop('request', None)
         super(LoginForm, self).__init__(*args, **kwargs)
 
@@ -41,6 +49,10 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
 
     def clean(self) -> Dict[str, Any]:
+        """
+        After validating the details, this function calls
+        the django in-built login method.
+        """
         request = self.request
         cleaned_data = super().clean()
         user = authenticate(request,

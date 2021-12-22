@@ -6,13 +6,14 @@ from django.conf import settings
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from core.models import BaseModel
 from core.utils import decode_token, get_token
+
+from .tasks import send_email
 
 
 class UserManager(BaseUserManager):
@@ -113,11 +114,13 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
             'emails/email_verification.html', context=context)
         text_email_body = render_to_string(
             'emails/email_verification.txt', context=context)
-        email = EmailMultiAlternatives(
-            _("[Tantra] Verify Your Email"), text_email_body, settings.FROM_EMAIL, [
-                self.email])
-        email.attach_alternative(html_email_body, "text/html")
-        email.send()
+
+        send_email.delay(subject=_("[Tantra] Verify Your Email"),
+                         body=text_email_body,
+                         from_email=settings.FROM_EMAIL,
+                         to=[self.email],
+                         attachment_body=html_email_body,
+                         attachment_mime_type="text/html")
 
     def get_email_verification_token(self) -> str:
         """Generates a token for email verification"""
