@@ -14,6 +14,7 @@ from core.models import BaseModel
 from core.utils import decode_token, get_token
 
 from .tasks import send_email
+from . import constants
 
 
 class UserManager(BaseUserManager):
@@ -32,13 +33,13 @@ class UserManager(BaseUserManager):
             User: Created user object.
         """
         if username is None:
-            raise TypeError(_("Users must have a username"))
+            raise TypeError(_(constants.NO_USERNAME_MSG))
 
         if email is None:
-            raise TypeError(_("Users must have an email"))
+            raise TypeError(_(constants.NO_EMAIL_MSG))
 
         if password is None:
-            raise TypeError(_("Users must have a password"))
+            raise TypeError(_(constants.NO_PASSWORD_MSG))
 
         user: User = self.model(
             username=username,
@@ -75,17 +76,16 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
         max_length=150,
         unique=True,
         error_messages={
-            'unique': _('A user with that username already exists.')},
-        help_text=_(
-            'Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+            'unique': _(constants.DUPLICATE_USERNAME_ERROR_MSG)},
+        help_text=_(constants.USERNAME_HELP_TEXT),
         validators=[
             UnicodeUsernameValidator()])
     email = models.EmailField(
         _('email address'),
         unique=True,
         error_messages={
-            'unique': _('A user with that email already exists.')},
-        help_text=_('Required. A valid email address.'))
+            'unique': _(constants.DUPLICATE_EMAIL_ERROR_MSG)},
+        help_text=_(constants.EMAIL_HELP_TEXT))
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
