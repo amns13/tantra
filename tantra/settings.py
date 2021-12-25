@@ -59,7 +59,9 @@ INSTALLED_APPS = [
     'django_celery_results',
 
     'apps.authentication',
-    'apps.post'
+    'apps.post',
+
+    'core',
 ]
 
 MIDDLEWARE = [
