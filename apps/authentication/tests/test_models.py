@@ -91,3 +91,8 @@ class UserTestCase(TestCase):
             username=self.test_username,
             email=self.test_email,
             password=None)
+
+    def test_verify_account(self):
+        user = self.create_test_user()
+        user.verify_account()
+        self.assert_(user.is_verified)
