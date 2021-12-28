@@ -1,5 +1,5 @@
 from datetime import timedelta
-import jwt
+
 from django.test import TestCase
 
 from .. import utils

@@ -10,11 +10,10 @@ from django.db import models
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
-from core.models import BaseModel
-from core.utils import decode_token, get_token
-
-from .tasks import send_email
+from ..core.models import BaseModel
+from ..core.utils import decode_token, get_token
 from . import constants
+from .tasks import send_email
 
 
 class UserManager(BaseUserManager):

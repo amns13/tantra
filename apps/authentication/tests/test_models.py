@@ -96,3 +96,7 @@ class UserTestCase(TestCase):
         user = self.create_test_user()
         user.verify_account()
         self.assert_(user.is_verified)
+
+    def test_get_email_verification_token(self):
+        user = self.create_test_user()
+        token = self.test_get_email_verification_token()

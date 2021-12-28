@@ -58,10 +58,9 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_celery_results',
 
+    'apps.core',
     'apps.authentication',
     'apps.post',
-
-    'core',
 ]
 
 MIDDLEWARE = [

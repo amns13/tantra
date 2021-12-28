@@ -15,8 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
-from core.utils import is_dev_environment
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,7 +23,7 @@ urlpatterns = [
     path('post/', include('apps.post.urls')),
 ]
 
-if is_dev_environment():
+if settings.ENVIRONMENT == "dev":
     import debug_toolbar
     urlpatterns += [
         path('__debug__/', include(debug_toolbar.urls)),

@@ -1,6 +1,6 @@
-from django.http import HttpResponse, HttpRequest
-from django.views.decorators.http import require_safe
+from django.http import HttpRequest, HttpResponse
 from django.template.response import TemplateResponse
+from django.views.decorators.http import require_safe
 
 from .models import Post
 
