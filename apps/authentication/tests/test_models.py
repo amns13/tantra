@@ -1,7 +1,10 @@
+from datetime import timedelta
 from typing import Optional
-from django.test import TestCase
-from django.db.utils import IntegrityError
 
+from django.db.utils import IntegrityError
+from django.test import TestCase
+
+from ...core.utils import decode_token, get_token
 from .. import constants
 from ..models import User
 
@@ -14,7 +17,7 @@ class UserTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        User.objects.create(
+        cls.existing_user = User.objects.create(
             username=cls.existing_username,
             email=cls.existing_email,
             password=cls.default_password)
@@ -98,5 +101,47 @@ class UserTestCase(TestCase):
         self.assert_(user.is_verified)
 
     def test_get_email_verification_token(self):
-        user = self.create_test_user()
-        token = self.test_get_email_verification_token()
+        user = self.existing_user
+        token = user.get_email_verification_token()
+
+        decoded_values = decode_token(token)
+        self.assertIsNotNone(decoded_values.get("exp"))
+        self.assertEquals(str(user.uuid), decoded_values.get("verify_email"))
+
+    def test_get_password_rest_token(self):
+        user = self.existing_user
+        token = user.get_password_reset_token()
+
+        decoded_values = decode_token(token)
+        self.assertIsNotNone(decoded_values.get("exp"))
+        self.assertEquals(str(user.uuid), decoded_values.get("reset_password"))
+
+    def test_verify_email_verification_token(self):
+        user = self.existing_user
+        token = user.get_email_verification_token()
+        user_from_token = User.verify_email_verification_token(token)
+        self.assertIsNotNone(user_from_token)
+        self.assertEquals(user.pk, user_from_token.pk)
+
+    def test_verify_password_reset_token(self):
+        user = self.existing_user
+        token = user.get_password_reset_token()
+        user_from_token = User.verify_password_reset_token(token)
+        self.assertIsNotNone(user_from_token)
+        self.assertEquals(user.pk, user_from_token.pk)
+
+    def test_verify_email_verification_token_for_wrong_user(self):
+        token = get_token(
+            expires_in=timedelta(
+                seconds=600),
+            test_string="test_string")
+        user_from_token = User.verify_email_verification_token(token)
+        self.assertIsNone(user_from_token)
+
+    def test_verify_password_reset_token_for_wrong_user(self):
+        token = get_token(
+            expires_in=timedelta(
+                seconds=600),
+            test_string="test_string")
+        user_from_token = User.verify_password_reset_token(token)
+        self.assertIsNone(user_from_token)
