@@ -38,7 +38,7 @@ class Post(BaseModel):
         max_length=31,
         choices=PostStatusChoices.choices,
         help_text=_("Current status of the post."),
-        default=PostStatusChoices.DRAFT)
+        default=PostStatusChoices.PUBLISHED)
 
     objects = PostQuerySet.as_manager()
 
