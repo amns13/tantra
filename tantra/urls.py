@@ -20,7 +20,7 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('apps.authentication.urls')),
-    path('post/', include('apps.post.urls')),
+    path('', include('apps.post.urls')),
 ]
 
 if settings.ENVIRONMENT == "dev":
