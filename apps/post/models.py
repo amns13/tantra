@@ -1,8 +1,8 @@
+from ckeditor.fields import RichTextField
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from ckeditor.fields import RichTextField
 
 from ..core.models import BaseModel
 
@@ -25,7 +25,6 @@ class Post(BaseModel):
         _("title"),
         max_length=255,
         help_text=_("Title of the post."))
-    # body = models.TextField(_("body"), help_text=_("Content of the post."))
     body = RichTextField(_("body"), help_text=_("Content of the post."))
     author = models.ForeignKey(
         User,
@@ -41,6 +40,9 @@ class Post(BaseModel):
         default=PostStatusChoices.PUBLISHED)
 
     objects = PostQuerySet.as_manager()
+
+    class Meta:
+        ordering = ('-pkid',)
 
     def __str__(self) -> str:
         return self.title

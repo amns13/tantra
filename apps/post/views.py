@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 @require_safe
 def posts_list(request: HttpRequest) -> HttpResponse:
     template = 'index.html'
-    posts = Post.objects.published()
+    posts = Post.objects.published().values(
+        'uuid', 'title', 'created_at', 'author_id', 'author__username')
     return TemplateResponse(request, template, context={'posts': posts})
 
 
@@ -32,7 +33,9 @@ def create_post(request: HttpRequest) -> HttpResponse:
             post = Post.objects.create(
                 author=request.user,
                 title=data['title'],
-                body=data['body'])
+                body=data['body'],
+                created_by=request.user,
+                updated_by=request.user)
             messages.success(request, _("Post published successfully."))
             return redirect('home')
     else:
