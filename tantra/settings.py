@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -24,7 +25,7 @@ load_dotenv()
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY', 'a-random-string')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
@@ -33,6 +34,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '0.0.0.0',
+    '192.168.184.69',
 ]
 
 
@@ -41,7 +43,7 @@ ENVIRONMENT = os.getenv('ENVIRONMENT')
 
 DEVELOPMENT_APPS = [
     'django_extensions',
-    'debug_toolbar',
+    'debug_toolbar.apps.DebugToolbarConfig',
 ]
 
 INSTALLED_APPS = [
@@ -54,9 +56,11 @@ INSTALLED_APPS = [
 
     'django_htmx',
     'crispy_forms',
+    'django_celery_results',
 
+    'apps.core',
     'apps.authentication',
-    'apps.post'
+    'apps.post',
 ]
 
 MIDDLEWARE = [
@@ -189,3 +193,25 @@ LOGGING = {
 
 DEFAULT_FK_REFERENCE_FIELD = 'uuid'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LOGIN_URL = 'login'
+
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+FROM_EMAIL = os.getenv('FROM_EMAIL')
+
+ENCRYPTION_ALGORITHM = 'HS256'
+
+ACCOUNT_VERIFICATION_TOKEN_EXPIRY = timedelta(hours=24)
+PASSWORD_RESET_TOKEN_EXPIRY = timedelta(minutes=10)
+DOMAIN_URL = os.getenv('DOMAIN_URL')
+
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'

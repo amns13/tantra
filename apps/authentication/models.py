@@ -1,11 +1,19 @@
 from __future__ import annotations
 
-from core.models import BaseModel
+from typing import Optional
+
+from django.conf import settings
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
+
+from ..core.models import BaseModel
+from ..core.utils import decode_token, get_token
+from . import constants
+from .tasks import send_email
 
 
 class UserManager(BaseUserManager):
@@ -24,13 +32,13 @@ class UserManager(BaseUserManager):
             User: Created user object.
         """
         if username is None:
-            raise TypeError(_("Users must have a username"))
+            raise TypeError(_(constants.NO_USERNAME_MSG))
 
         if email is None:
-            raise TypeError(_("Users must have an email"))
+            raise TypeError(_(constants.NO_EMAIL_MSG))
 
         if password is None:
-            raise TypeError(_("Users must have a password"))
+            raise TypeError(_(constants.NO_PASSWORD_MSG))
 
         user: User = self.model(
             username=username,
@@ -67,17 +75,16 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
         max_length=150,
         unique=True,
         error_messages={
-            'unique': _('A user with that username already exists.')},
-        help_text=_(
-            'Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+            'unique': _(constants.DUPLICATE_USERNAME_ERROR_MSG)},
+        help_text=_(constants.USERNAME_HELP_TEXT),
         validators=[
             UnicodeUsernameValidator()])
     email = models.EmailField(
         _('email address'),
         unique=True,
         error_messages={
-            'unique': _('A user with that email already exists.')},
-        help_text=_('Required. A valid email address.'))
+            'unique': _(constants.DUPLICATE_EMAIL_ERROR_MSG)},
+        help_text=_(constants.EMAIL_HELP_TEXT))
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -95,3 +102,55 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
 
     def __str__(self) -> str:
         return self.username
+
+    def send_email_verification_email(self) -> None:
+        context = {
+            'username': self.username,
+            'token': self.get_email_verification_token(),
+            'domain': settings.DOMAIN_URL,
+        }
+        html_email_body = render_to_string(
+            'emails/email_verification.html', context=context)
+        text_email_body = render_to_string(
+            'emails/email_verification.txt', context=context)
+
+        send_email.delay(subject=_("[Tantra] Verify Your Email"),
+                         body=text_email_body,
+                         from_email=settings.FROM_EMAIL,
+                         to=[self.email],
+                         attachment_body=html_email_body,
+                         attachment_mime_type="text/html")
+
+    def get_email_verification_token(self) -> str:
+        """Generates a token for email verification"""
+        uuid = str(self.uuid)
+        return get_token(
+            settings.ACCOUNT_VERIFICATION_TOKEN_EXPIRY, verify_email=uuid)
+
+    def get_password_reset_token(self) -> str:
+        """Generates a token for password reset"""
+        uuid = str(self.uuid)
+        return get_token(settings.PASSWORD_RESET_TOKEN_EXPIRY,
+                         reset_password=uuid)
+
+    @staticmethod
+    def verify_email_verification_token(token: str) -> Optional[User]:
+        try:
+            uuid = decode_token(token)['verify_email']
+        except BaseException:
+            return None
+
+        return User.objects.filter(uuid=uuid).first()
+
+    @staticmethod
+    def verify_password_reset_token(token: str) -> Optional[User]:
+        try:
+            uuid = decode_token(token)['reset_password']
+        except BaseException:
+            return None
+        return User.objects.filter(uuid=uuid).first()
+
+    def verify_account(self) -> None:
+        """Verifies the user's account"""
+        self.is_verified = True
+        self.save()

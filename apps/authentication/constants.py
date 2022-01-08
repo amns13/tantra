@@ -1,0 +1,7 @@
+NO_USERNAME_MSG = "Users must have a username"
+NO_EMAIL_MSG = "Users must have an email"
+NO_PASSWORD_MSG = "Users must have a password"
+DUPLICATE_USERNAME_ERROR_MSG = "A user with that username already exists."
+USERNAME_HELP_TEXT = "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+DUPLICATE_EMAIL_ERROR_MSG = "A user with that email already exists."
+EMAIL_HELP_TEXT = "Required. A valid email address."

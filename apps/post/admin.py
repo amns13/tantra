@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 
-from core.admin import CustomModelAdmin
+from ..core.admin import CustomModelAdmin
 from .models import Post, PostComment, PostLike, PostCommentLike
 
 

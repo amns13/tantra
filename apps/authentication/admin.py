@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from core.admin import CustomModelAdmin
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
+from ..core.admin import CustomModelAdmin
 from .models import User
 
 
@@ -26,8 +26,6 @@ class CustomUserAdmin(CustomModelAdmin, UserAdmin):
     list_filter = (
         'is_superuser',
         'is_active',
-        'created_by',
-        'updated_by',
         'is_staff',
         'is_verified',
     )
@@ -35,9 +33,7 @@ class CustomUserAdmin(CustomModelAdmin, UserAdmin):
     date_hierarchy = 'created_at'
 
     fieldsets = (
-        (None, {'fields': ('username', 'password')}),
-        (_('Personal info'), {
-            'fields': ('email',)}),
+        (None, {'fields': ('username', 'email', 'password',)}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_verified', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
         }),
@@ -46,7 +42,7 @@ class CustomUserAdmin(CustomModelAdmin, UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2'),
+            'fields': ('username', 'email', 'password1', 'password2'),
         }),
     )
     search_fields = ('username', 'email')

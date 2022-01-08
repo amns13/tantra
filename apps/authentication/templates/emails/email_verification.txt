@@ -1,0 +1,11 @@
+Dear {{ username }},
+
+To verify your email address click on the following link:
+
+{{ domain }}{% url 'verify-email' token=token %}
+
+If you have not created an account on Nohara simply ignore this message.
+
+Sincerely,
+
+The Tantra Team
