@@ -9,16 +9,15 @@ from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.utils.translation import gettext_lazy as _
 
+from .decorators import unauthenticated_required
 from .forms import LoginForm, RegistrationForm
 from .models import User
 
 logger = logging.getLogger(__name__)
 
 
+@unauthenticated_required
 def register(request: HttpRequest) -> HttpResponse:
-    if request.user.is_authenticated:
-        return redirect('home')
-
     template = 'register.html'
 
     if request.method == 'POST':
@@ -39,10 +38,8 @@ def register(request: HttpRequest) -> HttpResponse:
     return TemplateResponse(request, template, context={'form': form})
 
 
+@unauthenticated_required
 def login(request: HttpRequest) -> HttpResponse:
-    if request.user.is_authenticated:
-        return redirect('home')
-
     template = 'login.html'
     if request.method == 'POST':
         form = LoginForm(request=request, data=request.POST)
