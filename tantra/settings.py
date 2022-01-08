@@ -34,7 +34,6 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '0.0.0.0',
-    '192.168.184.69',
 ]
 
 
@@ -43,7 +42,7 @@ ENVIRONMENT = os.getenv('ENVIRONMENT')
 
 DEVELOPMENT_APPS = [
     'django_extensions',
-    'debug_toolbar.apps.DebugToolbarConfig',
+    'debug_toolbar',
 ]
 
 INSTALLED_APPS = [
@@ -165,11 +164,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'authentication.User'
 
-INTENAL_IPS = [
-    'localhost',
-    '127.0.0.1',
-    '0.0.0.0',
-]
+INTERNAL_IPS = ALLOWED_HOSTS
 
 LOGGING = {
     'version': 1,
