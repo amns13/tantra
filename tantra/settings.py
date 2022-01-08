@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django_htmx',
     'crispy_forms',
     'django_celery_results',
+    'ckeditor',
 
     'apps.core',
     'apps.authentication',
